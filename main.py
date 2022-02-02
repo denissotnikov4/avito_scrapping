@@ -10,6 +10,13 @@ def handle_price(array):
         array[i] = ''.join(array[i].split())
     return array
 
+def remove_statistical_outliers(array):
+    array = pd.Series(array)
+    lower_bound = array.quantile(0.05)
+    upper_bound = array.quantile(0.95)
+    array = array[(array > lower_bound) & (array < upper_bound)]
+    return array
+
 def get_price_from_one_page(url):
     page = requests.get(url)
     filteredPrice = []
@@ -23,7 +30,7 @@ def get_price_from_one_page(url):
 
     filteredPrice = handle_price(filteredPrice)
 
-    return map(int, filteredPrice)
+    return remove_statistical_outliers(map(int, filteredPrice))
 
 # 1 .. count_of_pages
 def get_price_from_multiple_pages(url_general, count_of_pages):
@@ -41,7 +48,7 @@ def get_price_from_multiple_pages(url_general, count_of_pages):
         price_text = handle_price(price_text)
 
         price = price + price_text
-    return map(int, price)
+    return remove_statistical_outliers(map(int, price))
 
 def plotting(array):
     fig, ax = plt.subplots()
@@ -57,7 +64,8 @@ def get_statistic_information(array):
 
 url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&radius=200"
 
-array = sorted(get_price_from_multiple_pages(url, 4))
+array = sorted(get_price_from_multiple_pages(url, 3))
+
 print(get_statistic_information(array))
 
 print(plotting(array))
