@@ -70,6 +70,7 @@ def get_links_from_multiple_pages(url, count_of_pages):
     return links_text
 
 def plotting(array):
+    array = remove_statistical_outliers(array)
     fig, ax = plt.subplots()
     ax.hist(array, bins=20, linewidth=0.5, edgecolor="white")
     ax.set_xlabel('Цена')
@@ -77,6 +78,7 @@ def plotting(array):
     plt.show()
 
 def get_statistic_information(array):
+    array = remove_statistical_outliers(array)
     array = pd.Series(array)
     return array.describe()
 
@@ -99,14 +101,3 @@ def get_profitable_deals(url, count_of_pages, percentile):
         if array_price_from_multiple_pages[i] in array_below_market_price:
             profitable_deals.append(array_links_from_multiple_pages[i])
     return profitable_deals
-
-
-
-
-url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&f=ASgBAgECAkTgtg3GmSjitg3OmigBRfgCFnsiZnJvbSI6OTAxLCJ0byI6Mjg0NH0&radius=200"
-
-array = get_price_from_multiple_pages(url, 2)
-
-print(get_statistic_information(array))
-
-print(get_profitable_deals(url, 1, 0.2))
