@@ -61,11 +61,24 @@ def get_statistic_information(array):
     array = pd.Series(array)
     return array.describe()
 
+def get_below_market_price(url, count_of_pages, percentile):
+    array = get_price_from_multiple_pages(url, count_of_pages)
+    df = pd.Series(array)
+    fixed_price_value = df.quantile(percentile)
+    below_market_price = []
+    for elem in array:
+        if elem < fixed_price_value:
+            below_market_price.append(elem)
+    return below_market_price
+
+    
 
 url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&radius=200"
 
-array = sorted(get_price_from_multiple_pages(url, 3))
+array = get_price_from_multiple_pages(url, 1)
 
 print(get_statistic_information(array))
 
 print(plotting(array))
+
+print(get_below_market_price(url, 3, 0.4))
