@@ -3,34 +3,43 @@ import requests
 import matplotlib.pyplot as plt
 import pandas as pd
 
+def handle_price(array):
+    for i in range(len(array)):
+        array[i] = array[i].replace("\\", "")
+        array[i] = array[i].replace("₽", "")
+        array[i] = ''.join(array[i].split())
+    return array
 
-url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&p=1&radius=200"
+def get_price_from_one_page(url):
+    price = []
+    page = requests.get(url)
+    filteredPrice = []
 
-page = requests.get(url)
+    soup = BeautifulSoup(page.text, "html.parser")
+    all_items = soup.findAll('div', class_='iva-item-priceStep-uq2CQ')
 
-filteredPrice = []
+    for data in all_items:
+        if data.find('span', class_='price-text-_YGDY text-text-LurtD text-size-s-BxGpL') is not None:
+            filteredPrice.append(data.text)
 
-soup = BeautifulSoup(page.text, "html.parser")
-all_items = soup.findAll('div', class_='iva-item-priceStep-uq2CQ')
+    filteredPrice = handle_price(filteredPrice)
+
+    return filteredPrice
+
+def plotting(array):
+    x = [i for i in range(len(array))]
+    y = array
+    plt.plot(x, y)
+    plt.show()
 
 
-for data in all_items:
-    if data.find('span', class_='price-text-_YGDY text-text-LurtD text-size-s-BxGpL') is not None:
-        filteredPrice.append(data.text)
 
-# Нужно сделать как функцию
-for i in range(len(filteredPrice)):
-    filteredPrice[i] = filteredPrice[i].replace("\\", "")
-    filteredPrice[i] = filteredPrice[i].replace("₽", "")
-    filteredPrice[i] = ''.join(filteredPrice[i].split())
-print(filteredPrice)
-print(len(filteredPrice))
 
-x = [i for i in range(len(filteredPrice))]
-y = filteredPrice
-plt.plot(x, y)
-plt.show()
+url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&radius=200"
 
+array = get_price_from_one_page(url)
+
+print(plotting(array))
 
 
 
