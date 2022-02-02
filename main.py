@@ -50,6 +50,20 @@ def get_price_from_multiple_pages(url_general, count_of_pages):
         price = price + price_text
     return remove_statistical_outliers(map(int, price))
 
+def get_links_from_multiple_pages(url):
+    page = requests.get(url)
+    links_text = []
+    req = requests.get(url + '&p=' + str(page))
+    soup = BeautifulSoup(req.text, 'html.parser')
+
+    for a in soup.find_all('a', class_='link-link-MbQDP link-design-default-_nSbv title-root-zZCwT '
+                                       'iva-item-title-py3i_ title-listRedesign-_rejR title-root_maxHeight-X6PsH'):
+        links_text.append(a['href'])
+
+    for i in range(len(links_text)):
+        links_text[i] = 'https://www.avito.ru' + links_text[i]
+    return links_text
+
 def plotting(array):
     fig, ax = plt.subplots()
     ax.hist(array, bins=20, linewidth=0.5, edgecolor="white")
@@ -71,7 +85,7 @@ def get_below_market_price(url, count_of_pages, percentile):
             below_market_price.append(elem)
     return below_market_price
 
-    
+
 
 url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&radius=200"
 
@@ -82,3 +96,7 @@ print(get_statistic_information(array))
 print(plotting(array))
 
 print(get_below_market_price(url, 3, 0.4))
+
+print(get_links_from_multiple_pages(url, 3))
+
+print(get_links_from_multiple_pages(url))
