@@ -24,21 +24,25 @@ def get_price_from_one_page(url):
 
     filteredPrice = handle_price(filteredPrice)
 
-    return filteredPrice
+    return map(int, filteredPrice)
 
 def plotting(array):
-    x = [i for i in range(len(array))]
-    y = array
-    plt.plot(x, y)
+    fig, ax = plt.subplots()
+    ax.hist(array, bins=20, linewidth=0.5, edgecolor="white")
     plt.show()
+
+def get_statistic_information(array):
+    array = pd.Series(array)
+    return array.describe()
 
 
 
 
 url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&radius=200"
 
-array = get_price_from_one_page(url)
+array = sorted(get_price_from_one_page(url))
 
+print(get_statistic_information(array))
 print(plotting(array))
 
 
