@@ -30,10 +30,12 @@ def get_price_from_one_page(url):
 
     filteredPrice = handle_price(filteredPrice)
 
-    return remove_statistical_outliers(map(int, filteredPrice))
+    #return remove_statistical_outliers(map(int, filteredPrice))
+
+    return list(map(int, filteredPrice))
 
 # 1 .. count_of_pages
-def get_price_from_multiple_pages(url_general, count_of_pages):
+def get_price_from_multiple_pages(url, count_of_pages):
     price = []
     for page in range(1, count_of_pages + 1):
         price_text = []
@@ -48,20 +50,24 @@ def get_price_from_multiple_pages(url_general, count_of_pages):
         price_text = handle_price(price_text)
 
         price = price + price_text
-    return remove_statistical_outliers(map(int, price))
+    #return remove_statistical_outliers(map(int, price))
 
-def get_links_from_multiple_pages(url):
+    return list(map(int, price))
+
+def get_links_from_multiple_pages(url, count_of_pages):
     page = requests.get(url)
     links_text = []
-    req = requests.get(url + '&p=' + str(page))
-    soup = BeautifulSoup(req.text, 'html.parser')
-
-    for a in soup.find_all('a', class_='link-link-MbQDP link-design-default-_nSbv title-root-zZCwT '
+    for page in range(1, count_of_pages + 1):
+        price_text = []
+        req = requests.get(url + '&p=' + str(page))
+        soup = BeautifulSoup(req.text, 'html.parser')
+        for a in soup.find_all('a', class_='link-link-MbQDP link-design-default-_nSbv title-root-zZCwT '
                                        'iva-item-title-py3i_ title-listRedesign-_rejR title-root_maxHeight-X6PsH'):
-        links_text.append(a['href'])
+            links_text.append(a['href'])
 
     for i in range(len(links_text)):
         links_text[i] = 'https://www.avito.ru' + links_text[i]
+
     return links_text
 
 def plotting(array):
@@ -85,9 +91,20 @@ def get_below_market_price(url, count_of_pages, percentile):
             below_market_price.append(elem)
     return below_market_price
 
+def get_profitable_deals(url, count_of_pages, percentile):
+    profitable_deals = []
+    array_below_market_price = get_below_market_price(url, count_of_pages, percentile)
+    array_links_from_multiple_pages = get_links_from_multiple_pages(url, count_of_pages)
+    array_price_from_multiple_pages = get_price_from_multiple_pages(url, count_of_pages)
+    for i in range(len(array_price_from_multiple_pages)):
+        if array_price_from_multiple_pages[i] in array_below_market_price:
+            profitable_deals.append(array_links_from_multiple_pages[i])
+    return profitable_deals
 
 
-url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&radius=200"
+
+
+url = "https://www.avito.ru/ekaterinburg/avtomobili/s_probegom/porsche/cayenne-ASgBAgICA0SGFMjmAeC2DYaZKOK2DYChKA?cd=1&f=ASgBAgECA0SGFMjmAeC2DYaZKOK2DYChKAFF~AIaeyJmcm9tIjoyMDMwMywidG8iOjQwNTI0Mn0&radius=200"
 
 array = get_price_from_multiple_pages(url, 1)
 
@@ -95,8 +112,4 @@ print(get_statistic_information(array))
 
 print(plotting(array))
 
-print(get_below_market_price(url, 3, 0.4))
-
-print(get_links_from_multiple_pages(url, 3))
-
-print(get_links_from_multiple_pages(url))
+print(get_profitable_deals(url, 1, 0.2))
