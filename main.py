@@ -41,7 +41,7 @@ def get_price_from_multiple_pages(url, count_of_pages):
         price_text = []
         req = requests.get(url + '&p=' + str(page))
         soup = BeautifulSoup(req.text, 'html.parser')
-        all_items = soup.findAll('div', class_='iva-item-priceStep-uq2CQ')
+        all_items = soup.findAll('span', class_='price-root-RA1pj price-listRedesign-GXB2V')
 
         for data in all_items:
             if data.find('span', class_='price-text-_YGDY text-text-LurtD text-size-s-BxGpL') is not None:
@@ -61,8 +61,7 @@ def get_links_from_multiple_pages(url, count_of_pages):
         price_text = []
         req = requests.get(url + '&p=' + str(page))
         soup = BeautifulSoup(req.text, 'html.parser')
-        for a in soup.find_all('a', class_='link-link-MbQDP link-design-default-_nSbv title-root-zZCwT '
-                                       'iva-item-title-py3i_ title-listRedesign-_rejR title-root_maxHeight-X6PsH'):
+        for a in soup.find_all('a', class_='link-link-MbQDP link-design-default-_nSbv title-root-zZCwT iva-item-title-py3i_ title-listRedesign-_rejR title-root_maxHeight-X6PsH'):
             links_text.append(a['href'])
 
     for i in range(len(links_text)):
@@ -104,12 +103,10 @@ def get_profitable_deals(url, count_of_pages, percentile):
 
 
 
-url = "https://www.avito.ru/ekaterinburg/avtomobili/s_probegom/porsche/cayenne-ASgBAgICA0SGFMjmAeC2DYaZKOK2DYChKA?cd=1&f=ASgBAgECA0SGFMjmAeC2DYaZKOK2DYChKAFF~AIaeyJmcm9tIjoyMDMwMywidG8iOjQwNTI0Mn0&radius=200"
+url = "https://www.avito.ru/ekaterinburg/avtomobili/vaz_lada/2107-ASgBAgICAkTgtg3GmSjitg3Omig?cd=1&f=ASgBAgECAkTgtg3GmSjitg3OmigBRfgCFnsiZnJvbSI6OTAxLCJ0byI6Mjg0NH0&radius=200"
 
-array = get_price_from_multiple_pages(url, 1)
+array = get_price_from_multiple_pages(url, 2)
 
 print(get_statistic_information(array))
-
-print(plotting(array))
 
 print(get_profitable_deals(url, 1, 0.2))
