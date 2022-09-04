@@ -13,7 +13,7 @@ def handle_price(array):
     return array
 
 
-# Удалить статистические выбросы
+# Удаление статистических выбросов
 def remove_statistical_outliers(array):
     array = pd.Series(array)
     lower_bound = array.quantile(0.05)
@@ -22,7 +22,7 @@ def remove_statistical_outliers(array):
     return array
 
 
-# Получаем все цены товара с одной страницы
+# Получение цен продукта с одной страницы
 def get_price_from_one_page(url):
     page = requests.get(url)
     filteredPrice = []
@@ -39,8 +39,7 @@ def get_price_from_one_page(url):
     return list(map(int, filteredPrice))
 
 
-# 1 .. count_of_pages
-# Получаем цены товара с нескольких страниц
+# Получение цен продукта с нескольких страниц
 def get_price_from_multiple_pages(url, count_of_pages):
     price = []
     for page in range(1, count_of_pages + 1):
@@ -60,7 +59,7 @@ def get_price_from_multiple_pages(url, count_of_pages):
     return list(map(int, price))
 
 
-# Получаем ссылки с нескольких страниц
+# Получение ссылок с нескольких страниц
 def get_links_from_multiple_pages(url, count_of_pages):
     page = requests.get(url)
     links_text = []
@@ -106,7 +105,7 @@ def get_below_market_price(url, count_of_pages, percentile):
     return below_market_price
 
 
-# Получение выгодных сделок (ссылок) исходя из введенного персентиля
+# Получение выгодных сделок (ссылок) исходя из введённого персентиля
 def get_profitable_deals(url, count_of_pages, percentile):
     profitable_deals = []
     array_below_market_price = get_below_market_price(url, count_of_pages, percentile)
